@@ -1,0 +1,273 @@
+{% extends 'adoption/pages/base.html' %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <!-- Delete Confirmation Card -->
+            <div class="card shadow-lg border-0">
+                <!-- Danger Header -->
+                <div class="card-header bg-danger text-white py-4">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <i class="bi bi-exclamation-triangle-fill display-6"></i>
+                        </div>
+                        <div class="flex-grow-1 ms-4">
+                            <h1 class="h3 mb-0">Confirm Deletion</h1>
+                            <p class="mb-0 opacity-75">Irreversible action required</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Warning Alert -->
+                <div class="alert alert-warning border-0 rounded-0 mb-0" role="alert">
+                    <div class="d-flex">
+                        <div class="me-3">
+                            <i class="bi bi-shield-exclamation fs-4"></i>
+                        </div>
+                        <div>
+                            <h4 class="alert-heading">Warning: Permanent Action</h4>
+                            <p class="mb-0">This action cannot be undone. Please review before proceeding.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Pet Information -->
+                <div class="card-body p-4 p-md-5">
+                    <!-- Pet Summary -->
+                    <div class="text-center mb-5">
+                        <div class="pet-avatar-large mb-4 mx-auto">
+                            {% if pet.dog %}
+                            <i class="bi bi-bug text-primary display-1"></i>
+                            {% elif pet.cat %}
+                            <i class="bi bi-bug-fill text-warning display-1"></i>
+                            {% else %}
+                            <i class="bi bi-question-circle text-secondary display-1"></i>
+                            {% endif %}
+                        </div>
+                        
+                        <h2 class="display-6 fw-bold text-danger mb-3">
+                            "{{ pet.name }}"
+                        </h2>
+                        
+                        <div class="d-flex justify-content-center gap-3 mb-4">
+                            <span class="badge bg-info text-dark fs-6">
+                                <i class="bi bi-tags me-1"></i>{{ pet.breed|default:"Unknown" }}
+                            </span>
+                            <span class="badge bg-primary fs-6">
+                                <i class="bi bi-calendar3 me-1"></i>{{ pet.age }} years
+                            </span>
+                            <span class="badge {% if pet.adopted %}bg-success{% else %}bg-warning text-dark{% endif %} fs-6">
+                                <i class="bi bi-heart me-1"></i>
+                                {{ pet.adopted|yesno:"Adopted,Available" }}
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <!-- Warning Details -->
+                    <div class="alert alert-danger border-danger" role="alert">
+                        <div class="d-flex">
+                            <div class="me-3">
+                                <i class="bi bi-trash-fill fs-4"></i>
+                            </div>
+                            <div>
+                                <h5 class="alert-heading">You are about to delete:</h5>
+                                <ul class="mb-0">
+                                    <li><strong>Pet Name:</strong> {{ pet.name }}</li>
+                                    <li><strong>Breed:</strong> {{ pet.breed|default:"Unknown" }}</li>
+                                    <li><strong>Age:</strong> {{ pet.age }} years</li>
+                                    <li><strong>Status:</strong> {{ pet.adopted|yesno:"Adopted,Available for adoption" }}</li>
+                                    {% if pet.description %}
+                                    <li><strong>Description:</strong> {{ pet.description|truncatewords:20 }}</li>
+                                    {% endif %}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Impact Warning -->
+                    <div class="card border-warning mb-4">
+                        <div class="card-header bg-warning bg-opacity-10 border-warning">
+                            <h5 class="mb-0">
+                                <i class="bi bi-lightning-charge text-warning me-2"></i>
+                                What happens next?
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-unstyled mb-0">
+                                <li class="mb-2">
+                                    <i class="bi bi-x-circle-fill text-danger me-2"></i>
+                                    All pet information will be permanently removed
+                                </li>
+                                <li class="mb-2">
+                                    <i class="bi bi-x-circle-fill text-danger me-2"></i>
+                                    This action cannot be undone or recovered
+                                </li>
+                                <li class="mb-2">
+                                    <i class="bi bi-x-circle-fill text-danger me-2"></i>
+                                    Any associated records will be deleted
+                                </li>
+                                <li>
+                                    <i class="bi bi-x-circle-fill text-danger me-2"></i>
+                                    This may affect adoption records and reports
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <!-- Confirmation Form -->
+                    <form method="POST" class="mt-4">
+                        {% csrf_token %}
+                        
+                        <!-- Final Confirmation Check -->
+                        <div class="form-check mb-4">
+                            <input class="form-check-input" type="checkbox" id="confirmDelete" required>
+                            <label class="form-check-label fw-semibold" for="confirmDelete">
+                                <i class="bi bi-check-circle me-2"></i>
+                                I understand this action is permanent and cannot be undone
+                            </label>
+                        </div>
+                        
+                        <!-- Action Buttons -->
+                        <div class="d-flex justify-content-between align-items-center">
+                            <!-- Cancel Button -->
+                            <a href="{% url 'adoption:pet_list' %}" class="btn btn-outline-secondary btn-lg px-5">
+                                <i class="bi bi-arrow-left me-2"></i>
+                                Cancel
+                            </a>
+                            
+                            <!-- Delete Button -->
+                            <button type="submit" class="btn btn-danger btn-lg px-5" id="deleteButton" disabled>
+                                <i class="bi bi-trash3 me-2"></i>
+                                Yes, Delete Permanently
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                
+                <!-- Footer Note -->
+                <div class="card-footer bg-light text-center py-3">
+                    <small class="text-muted">
+                        <i class="bi bi-shield-lock me-1"></i>
+                        For security reasons, this action requires explicit confirmation
+                    </small>
+                </div>
+            </div>
+            
+            <!-- Back to Safety -->
+            <div class="text-center mt-4">
+                <a href="{% url 'adoption:pet_detail' pet.pk %}" class="text-decoration-none">
+                    <i class="bi bi-eye me-1"></i>
+                    View pet details instead
+                </a>
+                <span class="text-muted mx-2">•</span>
+                <a href="{% url 'adoption:pet_update' pet.pk %}" class="text-decoration-none">
+                    <i class="bi bi-pencil me-1"></i>
+                    Edit pet information instead
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Confirmation Check Script -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const confirmCheckbox = document.getElementById('confirmDelete');
+        const deleteButton = document.getElementById('deleteButton');
+        
+        confirmCheckbox.addEventListener('change', function() {
+            deleteButton.disabled = !this.checked;
+        });
+        
+        // Double confirmation on delete
+        deleteButton.addEventListener('click', function(e) {
+            if (!confirm('Are you absolutely sure? This cannot be undone.')) {
+                e.preventDefault();
+            }
+        });
+    });
+</script>
+
+<!-- Delete Page Styling -->
+<style>
+    .pet-avatar-large {
+        width: 120px;
+        height: 120px;
+        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 4px solid #dc3545;
+        box-shadow: 0 4px 15px rgba(220, 53, 69, 0.2);
+    }
+    
+    .card {
+        border-radius: 15px;
+        overflow: hidden;
+    }
+    
+    .card-header {
+        border-bottom: none;
+    }
+    
+    .alert-warning {
+        background-color: #fff3cd;
+        border-left: 4px solid #ffc107;
+    }
+    
+    .alert-danger {
+        background-color: #f8d7da;
+        border-left: 4px solid #dc3545;
+    }
+    
+    .form-check-input {
+        width: 1.2em;
+        height: 1.2em;
+        margin-top: 0.2em;
+    }
+    
+    .form-check-input:checked {
+        background-color: #dc3545;
+        border-color: #dc3545;
+    }
+    
+    .btn-lg {
+        border-radius: 10px;
+        padding: 12px 30px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-danger {
+        background: linear-gradient(135deg, #dc3545, #bb2d3b);
+        border: none;
+    }
+    
+    .btn-danger:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(220, 53, 69, 0.4);
+    }
+    
+    .btn-danger:disabled {
+        opacity: 0.5;
+        transform: none !important;
+        box-shadow: none !important;
+    }
+    
+    .btn-outline-secondary:hover {
+        background-color: #6c757d;
+        color: white;
+    }
+    
+    .list-unstyled li {
+        padding: 5px 0;
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+    }
+    
+    .list-unstyled li:last-child {
+        border-bottom: none;
+    }
+</style>
+{% endblock %}

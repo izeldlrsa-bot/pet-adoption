@@ -1,0 +1,92 @@
+{% extends 'adoption/pages/base.html' %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row mb-4">
+        <div class="col">
+            <div class="card shadow-sm">
+                <div class="card-body py-2">
+                    <div class="d-flex justify-content-between align-items-center">
+                        {% if user.is_authenticated %}
+                        <div>
+                            <span class="fw-bold text-primary">
+                                <i class="bi bi-person-circle me-2"></i>Welcome, {{ user.username }}
+                            </span>
+                            {% if user.is_staff %}
+                            <span class="badge bg-danger ms-2">
+                                <i class="bi bi-shield-check"></i> Admin
+                            </span>
+                            {% else %}
+                            <span class="badge bg-secondary ms-2">
+                                <i class="bi bi-person"></i> User
+                            </span>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="d-flex gap-2 align-items-center">
+                            <a href="{% url 'user_management:profile' %}" class="btn btn-outline-primary btn-sm">
+                                <i class="bi bi-person"></i> Profile
+                            </a>
+
+                            <form method="post" action="{% url 'logout' %}" class="d-inline m-0">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-outline-danger btn-sm">
+                                    <i class="bi bi-box-arrow-right"></i> Logout
+                                </button>
+                            </form>
+                        </div>
+                        {% else %}
+                        <div>
+                            <span class="text-muted">Please login to view pets</span>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <a href="{% url 'login' %}" class="btn btn-primary btn-sm">
+                                <i class="bi bi-box-arrow-in-right"></i> Login
+                            </a>
+                            <a href="{% url 'register' %}" class="btn btn-success btn-sm">
+                                <i class="bi bi-person-plus"></i> Register
+                            </a>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h2 fw-bold text-primary">
+                        <i class="bi bi-heart-pulse me-2"></i>Our Pets
+                    </h1>
+                    <p class="text-muted">View all pets available for adoption</p>
+                </div>
+                <div>
+                    {% if user.is_authenticated and user.is_staff %}
+                    <a href="{% url 'adoption:pet_create' %}" class="btn btn-primary btn-lg">
+                        <i class="bi bi-plus-circle me-2"></i>Add New Pet
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-primary text-white py-3">
+                    <h3 class="h5 mb-0">
+                        <i class="bi bi-table me-2"></i>Available Pets
+                    </h3>
+                </div>
+                <div class="card-body p-0">
+                    {% include 'adoption/organisms/adoption_table.html' with pets=pets %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

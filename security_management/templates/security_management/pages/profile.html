@@ -1,0 +1,28 @@
+{% extends 'security_management/organisms/page.html' %}
+
+{% block content %}
+
+<div class="container d-flex justify-content-center mt-5">
+    <div class="card shadow p-4" style="width: 400px;">
+        <h3 class="text-center mb-4">User Profile</h3>
+
+        <p><strong>Username:</strong> {{ request.user.username }}</p>
+        <p><strong>Email:</strong> {{ request.user.email|default:"Not provided" }}</p>
+        <p>
+            <strong>Role:</strong>
+            {% if request.user.is_staff %}
+                <span class="badge bg-danger">Admin</span>
+            {% else %}
+                <span class="badge bg-success">User</span>
+            {% endif %}
+        </p>
+
+        <div class="d-grid mt-3">
+            <a href="{% url 'adoption:pet_list' %}" class="btn btn-primary">
+                Home
+            </a>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,112 @@
+<!-- pet_adoption/templates/pet_adoption/debug_applications.html -->
+{% extends "pet_adoption/base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>Application Status Debug</h1>
+    
+    <div class="card mt-4">
+        <div class="card-header">
+            <h4>All Applications in Database</h4>
+        </div>
+        <div class="card-body">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>User</th>
+                        <th>Pet</th>
+                        <th>Status</th>
+                        <th>Applied Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for app in all_apps %}
+                    <tr>
+                        <td>{{ app.id }}</td>
+                        <td>{{ app.user.username }}</td>
+                        <td>{{ app.pet.name }}</td>
+                        <td><span class="badge bg-info">{{ app.status }}</span></td>
+                        <td>{{ app.applied_date|date:"Y-m-d H:i" }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <div class="card mt-4">
+        <div class="card-header">
+            <h4>Your Applications (user: {{ request.user.username }})</h4>
+        </div>
+        <div class="card-body">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Pet</th>
+                        <th>Status</th>
+                        <th>Applied Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for app in user_apps %}
+                    <tr>
+                        <td>{{ app.id }}</td>
+                        <td>{{ app.pet.name }}</td>
+                        <td>
+                            <span class="badge 
+                                {% if app.status == 'pending' %}bg-warning
+                                {% elif app.status == 'under_review' %}bg-info
+                                {% elif app.status == 'approved' %}bg-success
+                                {% elif app.status == 'rejected' %}bg-danger
+                                {% else %}bg-secondary{% endif %}">
+                                {{ app.get_status_display }}
+                            </span>
+                        </td>
+                        <td>{{ app.applied_date|date:"Y-m-d H:i" }}</td>
+                        <td>
+                            <a href="/admin/adoption/adoptionapplication/{{ app.id }}/change/" 
+                               target="_blank" class="btn btn-sm btn-outline-primary">
+                                Edit in Admin
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <div class="card mt-4">
+        <div class="card-header">
+            <h4>Test Instructions</h4>
+        </div>
+        <div class="card-body">
+            <ol>
+                <li>Open the <a href="/admin/" target="_blank">Admin Panel</a></li>
+                <li>Go to "Adoption applications"</li>
+                <li>Find your application and change its status</li>
+                <li>Click "Save"</li>
+                <li>Refresh this debug page</li>
+                <li>The status should update immediately</li>
+            </ol>
+            
+            <div class="alert alert-info mt-3">
+                <h5>Why status might not update:</h5>
+                <ul>
+                    <li>You're looking at the wrong user's applications</li>
+                    <li>You didn't click "Save" in admin</li>
+                    <li>Browser cache (try Ctrl+F5)</li>
+                    <li>You have multiple database connections</li>
+                </ul>
+            </div>
+            
+            <a href="{% url 'pet_adoption:my_applications' %}" class="btn btn-primary">
+                Go to My Applications Page
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

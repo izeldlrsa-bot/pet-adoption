@@ -1,0 +1,72 @@
+/* adoption-crud-bootstrap.css - TEST FILE */
+body { 
+    background-color: red !important; 
+    font-family: Arial, sans-serif;
+}
+
+.navbar {
+    background-color: blue !important;
+}
+
+
+/* Row hover effect */
+.hover-row {
+    transition: all 0.3s ease;
+    border-left: 4px solid transparent;
+}
+
+.hover-row:hover {
+    background-color: rgba(13, 110, 253, 0.08) !important;
+    transform: translateX(5px);
+    border-left: 4px solid #0d6efd;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+/* Pet avatar styling */
+.pet-avatar {
+    width: 40px;
+    height: 40px;
+    background-color: #f8f9fa;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #e9ecef;
+}
+
+/* Action buttons styling */
+.action-buttons .btn {
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.action-buttons .btn:hover {
+    transform: translateY(-3px) scale(1.1);
+}
+
+/* Status badge improvements */
+.badge {
+    font-weight: 500;
+    letter-spacing: 0.3px;
+}
+
+/* Age display */
+.age-display {
+    position: relative;
+}
+
+.age-display::after {
+    content: 'yrs';
+    font-size: 0.7rem;
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #6c757d;
+}

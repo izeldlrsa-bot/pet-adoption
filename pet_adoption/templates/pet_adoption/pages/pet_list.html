@@ -1,0 +1,375 @@
+<!-- pet_adoption/pages/pet_list.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Available Pets - Pet Adoption</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    
+    <style>
+        body { 
+            padding-top: 0; 
+            background-color: #f5f5f5;
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        :root {
+            --primary-color: #FF6B6B;
+        }
+        
+        .pet-card { 
+            background: white; 
+            border-radius: 8px; 
+            box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            border: none;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+        
+        .pet-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.15);
+        }
+        
+        .pet-card .card-img-top {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 0;
+        }
+        
+        .navbar {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #FF8787 100%) !important;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.3rem;
+        }
+        
+        .container {
+            max-width: 1400px;
+            padding: 0 20px;
+        }
+        
+        h1 {
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 40px;
+            margin-top: 30px;
+        }
+        
+        .btn-success {
+            background: var(--primary-color);
+            border: none;
+            border-radius: 10px;
+            padding: 10px 20px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .btn-success:hover {
+            background: #FF5252;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.3);
+        }
+        
+        .input-group {
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+        
+        .form-control {
+            border: none;
+            padding: 12px 16px;
+            font-size: 1rem;
+        }
+        
+        .btn-primary {
+            background: var(--primary-color);
+            border: none;
+            font-weight: 600;
+            padding: 12px 24px;
+        }
+        
+        .btn-primary:hover {
+            background: #FF5252;
+        }
+        
+        .alert {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+        
+        .badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+        
+        .navbar-btn {
+            margin-left: 10px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .navbar-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .btn-warning {
+            background: #FFA726;
+            border: none;
+            color: white;
+            font-weight: 600;
+        }
+        
+        .btn-warning:hover {
+            background: #FF7043;
+            color: white;
+        }
+        
+        .btn-danger {
+            background: #EF5350;
+            border: none;
+            font-weight: 600;
+        }
+        
+        .btn-danger:hover {
+            background: #E53935;
+        }
+        
+        footer {
+            background: #2c3e50;
+            color: white;
+            padding: 30px 0;
+            margin-top: 50px;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation with My Applications Button -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'landing' %}">
+                <i class="bi bi-house-heart"></i> Pet Adoption
+            </a>
+            
+            <div class="navbar-nav ms-auto">
+                {% if user.is_authenticated %}
+                    <!-- My Applications Button -->
+                    <a class="btn btn-outline-light navbar-btn" href="{% url 'pet_adoption:my_applications' %}">
+                        <i class="bi bi-file-text"></i> My Applications
+                    </a>
+                    
+                    <!-- User Info -->
+                    <span class="navbar-text text-light mx-3">
+                        <i class="bi bi-person-circle"></i> {{ user.username }}
+                    </span>
+                    
+                    <!-- Logout Button -->
+                    <a class="btn btn-light navbar-btn" href="{% url 'logout' %}">
+                        <i class="bi bi-box-arrow-right"></i> Logout
+                    </a>
+                {% else %}
+                    <!-- Login Button -->
+                    <a class="btn btn-outline-light navbar-btn" href="{% url 'login' %}">
+                        <i class="bi bi-box-arrow-in-right"></i> Login
+                    </a>
+                    
+                    <!-- Register Button -->
+                    <a class="btn btn-light navbar-btn" href="{% url 'register' %}">
+                        <i class="bi bi-person-plus"></i> Register
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <!-- Messages -->
+    <div class="container">
+        {% if messages %}
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1>Available Pets for Adoption</h1>
+            {% if user.is_authenticated and user.is_staff %}
+            <a href="{% url 'adoption:pet_create' %}" class="btn btn-success btn-lg">
+                <i class="bi bi-plus-circle me-2"></i>Add New Pet
+            </a>
+            {% endif %}
+        </div>
+        
+        <!-- Search Form -->
+        <form method="get" class="mb-4">
+            <div class="input-group">
+                <input type="text" name="search" value="{{ search_query }}" 
+                       placeholder="Search pets by name, breed, or description..." 
+                       class="form-control">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-search"></i> Search
+                </button>
+            </div>
+        </form>
+        
+        {% if total_pets > 0 %}
+            <p class="text-muted mb-4">
+                Found {{ total_pets }} pet{{ total_pets|pluralize }} available for adoption
+            </p>
+        {% endif %}
+        
+        {% if page_obj %}
+            <div class="row g-5">
+                {% for pet in page_obj %}
+                <div class="col-md-4 mb-2">
+                    <div class="pet-card h-100">
+                        {% if pet.main_image %}
+                        <img src="{{ pet.main_image.url }}" class="card-img-top" alt="{{ pet.name }}" 
+                             style="height: 200px; object-fit: cover;">
+                        {% else %}
+                        <div class="card-img-top d-flex align-items-center justify-content-center" 
+                             style="height: 200px;">
+                            <i class="bi bi-image text-white" style="font-size: 3rem;"></i>
+                        </div>
+                        {% endif %}
+                        <div class="card-body p-4">
+                            <h5 class="card-title fw-bold" style="color: var(--primary-color); font-size: 1.3rem; margin-bottom: 20px;">{{ pet.name }}</h5>
+                            <div class="mb-4">
+                                <p class="card-text mb-3">
+                                    <i class="bi bi-tag-fill" style="color: var(--primary-color);"></i>
+                                    <strong>Breed:</strong> <span class="text-muted">{{ pet.breed }}</span>
+                                </p>
+                                <p class="card-text mb-3">
+                                    <i class="bi bi-calendar-event-fill" style="color: var(--primary-color);"></i>
+                                    <strong>Age:</strong> <span class="text-muted">{{ pet.age }} years</span>
+                                </p>
+                                <p class="card-text mb-3">
+                                    <i class="bi bi-paw-fill" style="color: var(--primary-color);"></i>
+                                    <strong>Type:</strong> 
+                                    <span class="text-muted">
+                                        {% if pet.is_dog %}<span class="badge bg-info">Dog</span>{% elif pet.is_cat %}<span class="badge bg-warning">Cat</span>{% else %}<span class="badge bg-secondary">Other</span>{% endif %}
+                                    </span>
+                                </p>
+                                <p class="card-text">
+                                    <i class="bi bi-info-circle-fill" style="color: var(--primary-color);"></i>
+                                    <strong>Status:</strong> 
+                                    {% if pet.adopted %}
+                                        <span class="badge bg-secondary">Adopted</span>
+                                    {% elif pet.is_available %}
+                                        <span class="badge bg-success">Available</span>
+                                    {% else %}
+                                        <span class="badge bg-warning text-dark">Not Available</span>
+                                    {% endif %}
+                                </p>
+                            </div>
+                            <div class="d-grid gap-3">
+                                <a href="{% url 'pet_adoption:pet_detail' pet.id %}" class="btn btn-primary btn-sm fw-600" style="padding: 12px;">
+                                    <i class="bi bi-eye"></i> View Details
+                                </a>
+                                
+                                {% if user.is_authenticated and user.is_staff %}
+                                <div class="d-flex gap-2">
+                                    <a href="{% url 'adoption:pet_update' pet.id %}" class="btn btn-warning flex-fill btn-sm fw-600" style="padding: 10px;">
+                                        <i class="bi bi-pencil"></i> Edit
+                                    </a>
+                                    <a href="{% url 'adoption:pet_delete' pet.id %}" class="btn btn-danger flex-fill btn-sm fw-600" style="padding: 10px;">
+                                        <i class="bi bi-trash"></i> Delete
+                                    </a>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <!-- Pagination -->
+            {% if page_obj.has_other_pages %}
+            <nav aria-label="Page navigation" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}">
+                            <i class="bi bi-chevron-left"></i> Previous
+                        </a>
+                    </li>
+                    {% endif %}
+                    
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                        <li class="page-item active">
+                            <span class="page-link">{{ num }}</span>
+                        </li>
+                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}">{{ num }}</a>
+                        </li>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}">
+                            Next <i class="bi bi-chevron-right"></i>
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        {% else %}
+            <div class="alert alert-info text-center py-5">
+                <i class="bi bi-emoji-frown display-1 text-muted mb-3"></i>
+                <h4>No pets available for adoption at the moment.</h4>
+                <p class="mb-4">Please check back later or contact us for more information.</p>
+                
+                {% if debug_mode %}
+                <div class="alert alert-warning mt-3">
+                    <h5>⚠️ DEBUG MODE ACTIVE</h5>
+                    <p>No pets found with filter: <code>is_available=True, adopted=False</code></p>
+                    <p><strong>Check Django console for detailed debug output.</strong></p>
+                </div>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Footer -->
+    <footer class="mt-5 py-4 bg-dark text-white">
+        <div class="container text-center">
+            <p class="mb-0">
+                <i class="bi bi-heart-fill text-danger"></i> 
+                Pet Adoption Center 
+                <i class="bi bi-heart-fill text-danger"></i>
+            </p>
+            <p class="small text-light mb-0">
+                Giving loving homes to rescued pets
+            </p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

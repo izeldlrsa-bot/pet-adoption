@@ -1,0 +1,192 @@
+{% extends 'adoption/user_management/base_user_management.html' %}
+
+{% block user_management_content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">
+                    <i class="fas fa-edit me-2"></i>Edit User: {{ user.username }}
+                </h4>
+            </div>
+            <div class="card-body">
+                <form method="post" novalidate>
+                    {% csrf_token %}
+                    
+                    {% if form.errors %}
+                    <div class="alert alert-danger">
+                        <strong>Please correct the errors below:</strong>
+                        {{ form.errors }}
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Basic Information -->
+                    <div class="row mb-4">
+                        <h6 class="text-muted mb-3">Basic Information</h6>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.username.id_for_label }}" class="form-label">
+                                Username *
+                            </label>
+                            {{ form.username }}
+                            {% if form.username.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.username.errors }}
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.email.id_for_label }}" class="form-label">
+                                Email *
+                            </label>
+                            {{ form.email }}
+                            {% if form.email.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.email.errors }}
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.first_name.id_for_label }}" class="form-label">
+                                First Name *
+                            </label>
+                            {{ form.first_name }}
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.last_name.id_for_label }}" class="form-label">
+                                Last Name *
+                            </label>
+                            {{ form.last_name }}
+                        </div>
+                    </div>
+                    
+                    <!-- Permissions -->
+                    <div class="row mb-4">
+                        <h6 class="text-muted mb-3">Permissions</h6>
+                        
+                        <div class="col-md-4 mb-3">
+                            <div class="form-check form-switch">
+                                {{ form.is_staff }}
+                                <label class="form-check-label" for="{{ form.is_staff.id_for_label }}">
+                                    Staff Member
+                                </label>
+                                <small class="form-text text-muted d-block">
+                                    Can access admin site
+                                </small>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4 mb-3">
+                            <div class="form-check form-switch">
+                                {{ form.is_active }}
+                                <label class="form-check-label" for="{{ form.is_active.id_for_label }}">
+                                    Active
+                                </label>
+                                <small class="form-text text-muted d-block">
+                                    User can log in
+                                </small>
+                            </div>
+                        </div>
+                        
+                        {% if request.user.is_superuser %}
+                        <div class="col-md-4 mb-3">
+                            <div class="form-check form-switch">
+                                {{ form.is_superuser }}
+                                <label class="form-check-label" for="{{ form.is_superuser.id_for_label }}">
+                                    Superuser
+                                </label>
+                                <small class="form-text text-muted d-block">
+                                    Has all permissions
+                                </small>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- User Info -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h6 class="text-muted">User Information</h6>
+                                    <p class="mb-1"><strong>Date Joined:</strong> {{ user.date_joined|date:"F d, Y" }}</p>
+                                    <p class="mb-1"><strong>Last Login:</strong> 
+                                        {% if user.last_login %}
+                                            {{ user.last_login|date:"F d, Y H:i" }}
+                                        {% else %}
+                                            <span class="text-muted">Never</span>
+                                        {% endif %}
+                                    </p>
+                                    <p class="mb-0"><strong>User ID:</strong> <code>{{ user.id }}</code></p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h6 class="text-muted">Current Status</h6>
+                                    <p class="mb-1">
+                                        <strong>Role:</strong> 
+                                        {% if user.is_superuser %}
+                                            <span class="badge bg-danger">Superuser</span>
+                                        {% elif user.is_staff %}
+                                            <span class="badge bg-primary">Staff</span>
+                                        {% else %}
+                                            <span class="badge bg-info">User</span>
+                                        {% endif %}
+                                    </p>
+                                    <p class="mb-0">
+                                        <strong>Active:</strong> 
+                                        {% if user.is_active %}
+                                            <span class="badge bg-success">Yes</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">No</span>
+                                        {% endif %}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="{% url 'user_management:user_list' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-1"></i> Cancel
+                        </a>
+                        <div>
+                            <a href="{% url 'user_management:user_detail' user.id %}" 
+                               class="btn btn-outline-info me-2">
+                                <i class="fas fa-eye me-1"></i> View
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-1"></i> Save Changes
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Add Bootstrap classes to form inputs
+document.addEventListener('DOMContentLoaded', function() {
+    const inputs = document.querySelectorAll('input[type="text"], input[type="email"]');
+    inputs.forEach(input => {
+        input.classList.add('form-control');
+    });
+    
+    // Add classes to checkboxes
+    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+    checkboxes.forEach(checkbox => {
+        checkbox.classList.add('form-check-input');
+    });
+});
+</script>
+{% endblock %}

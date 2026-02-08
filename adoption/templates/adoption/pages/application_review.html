@@ -1,0 +1,209 @@
+{% extends 'adoption/pages/base.html' %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h2 fw-bold">
+                <i class="bi bi-file-text text-primary me-2"></i>Review Application
+            </h1>
+            <p class="text-muted mb-0">
+                Application ID: {{ application.pk }} | 
+                Pet: <a href="{% url 'adoption:pet_detail' application.pet.pk %}">{{ application.pet.name }}</a>
+            </p>
+        </div>
+        <div>
+            <a href="{% url 'adoption:pet_detail' application.pet.pk %}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left me-2"></i>Back to Pet
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Left: Application Details -->
+        <div class="col-md-6">
+            <div class="card shadow mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-person-circle me-2"></i>Applicant Information</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table">
+                        <tr><th width="40%">Name:</th><td>{{ application.full_name }}</td></tr>
+                        <tr><th>Email:</th><td>{{ application.email }}</td></tr>
+                        <tr><th>Phone:</th><td>{{ application.phone }}</td></tr>
+                        <tr><th>Address:</th><td>{{ application.address|linebreaks }}</td></tr>
+                        <tr><th>Applied Date:</th><td>{{ application.applied_date|date:"M d, Y H:i" }}</td></tr>
+                        {% if application.reviewed_date %}
+                        <tr><th>Reviewed:</th><td>{{ application.reviewed_date|date:"M d, Y H:i" }}</td></tr>
+                        {% endif %}
+                        {% if application.decision_date %}
+                        <tr><th>Decision Date:</th><td>{{ application.decision_date|date:"M d, Y H:i" }}</td></tr>
+                        {% endif %}
+                    </table>
+                </div>
+            </div>
+
+            <!-- Pet Info -->
+            <div class="card shadow mb-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="bi bi-pets me-2"></i>Pet Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="me-3">
+                            {% if application.pet.is_dog %}
+                            <i class="bi bi-bug text-primary fs-1"></i>
+                            {% elif application.pet.is_cat %}
+                            <i class="bi bi-bug-fill text-warning fs-1"></i>
+                            {% endif %}
+                        </div>
+                        <div>
+                            <h5 class="mb-1">{{ application.pet.name }}</h5>
+                            <p class="text-muted mb-0">
+                                {{ application.pet.breed }} • {{ application.pet.age }} years old
+                                {% if application.pet.adopted %}
+                                • <span class="badge bg-secondary">Adopted</span>
+                                {% else %}
+                                • <span class="badge bg-success">Available</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: Review Form -->
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0"><i class="bi bi-gear me-2"></i>Review & Decision</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <!-- Application Responses -->
+                        <div class="mb-4">
+                            <h6 class="border-bottom pb-2">Application Responses</h6>
+                            <div class="mb-3">
+                                <label class="form-label"><strong>Why do you want to adopt this pet?</strong></label>
+                                <div class="card bg-light">
+                                    <div class="card-body">
+                                        {{ application.reason_for_adoption|linebreaks }}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label"><strong>Previous pet experience:</strong></label>
+                                <div class="card bg-light">
+                                    <div class="card-body">
+                                        {{ application.previous_pet_experience|linebreaks }}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            {% if application.home_description %}
+                            <div class="mb-3">
+                                <label class="form-label"><strong>Home environment:</strong></label>
+                                <div class="card bg-light">
+                                    <div class="card-body">
+                                        {{ application.home_description|linebreaks }}
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Status Update -->
+                        <div class="mb-4">
+                            <h6 class="border-bottom pb-2">Update Status</h6>
+                            <div class="mb-3">
+                                <label class="form-label">{{ form.status.label }}</label>
+                                {{ form.status }}
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">{{ form.notes.label }}</label>
+                                {{ form.notes }}
+                                <div class="form-text">Notes visible to applicant</div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">{{ form.admin_comments.label }}</label>
+                                {{ form.admin_comments }}
+                                <div class="form-text">Internal comments (not visible to applicant)</div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">{{ form.follow_up_date.label }}</label>
+                                        {{ form.follow_up_date }}
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="mb-3">
+                                        <label class="form-label">{{ form.follow_up_notes.label }}</label>
+                                        {{ form.follow_up_notes }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-save me-2"></i>Save Changes
+                            </button>
+                            <a href="{% url 'adoption:pet_detail' application.pet.pk %}" class="btn btn-outline-secondary">
+                                Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Current Status -->
+            <div class="card shadow mt-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0"><i class="bi bi-info-circle me-2"></i>Current Status</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <span class="badge bg-{{ application.status|default:'secondary' }} fs-6 py-2 px-3">
+                                {{ application.get_status_display }}
+                            </span>
+                        </div>
+                        <div class="text-end">
+                            <small class="text-muted d-block">Applied: {{ application.applied_date|date:"M d, Y" }}</small>
+                            {% if application.reviewed_date %}
+                            <small class="text-muted">Reviewed: {{ application.reviewed_date|date:"M d, Y" }}</small>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .form-control, .form-select {
+        border-radius: 8px;
+        padding: 10px;
+    }
+    
+    .card {
+        border-radius: 12px;
+        overflow: hidden;
+    }
+    
+    .card-header {
+        border-bottom: none;
+    }
+</style>
+{% endblock %}

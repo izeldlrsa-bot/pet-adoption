@@ -1,0 +1,174 @@
+{% extends 'adoption/pages/base.html' %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h2 fw-bold">
+                <i class="bi bi-file-text text-primary me-2"></i>Adoption Applications
+            </h1>
+            <p class="text-muted mb-0">Review and manage all adoption applications</p>
+        </div>
+        <div>
+            <a href="{% url 'adoption:pet_list' %}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left me-2"></i>Back to Pets
+            </a>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+    <div class="col-md-2">
+        <div class="card border-primary">
+            <div class="card-body text-center">
+                <h5 class="card-title text-primary">{{ total_count }}</h5>
+                <p class="card-text text-muted">Total</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card border-warning">
+            <div class="card-body text-center">
+                <h5 class="card-title text-warning">{{ pending_count }}</h5>
+                <p class="card-text text-muted">Pending</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card border-info">
+            <div class="card-body text-center">
+                <h5 class="card-title text-info">{{ under_review_count }}</h5>
+                <p class="card-text text-muted">Under Review</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card border-success">
+            <div class="card-body text-center">
+                <h5 class="card-title text-success">{{ approved_count }}</h5>
+                <p class="card-text text-muted">Approved</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card border-danger">
+            <div class="card-body text-center">
+                <h5 class="card-title text-danger">{{ rejected_count }}</h5>
+                <p class="card-text text-muted">Rejected</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card border-secondary">
+            <div class="card-body text-center">
+                <h5 class="card-title text-secondary">{{ cancelled_count }}</h5>
+                <p class="card-text text-muted">Cancelled</p>
+            </div>
+        </div>
+    </div>
+</div>
+       
+
+    <!-- Applications Table -->
+    <div class="card shadow">
+        <div class="card-header bg-light">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">All Applications</h5>
+                <div class="d-flex gap-2">
+                    <input type="text" class="form-control form-control-sm" placeholder="Search..." 
+                           id="searchInput" style="width: 200px;">
+                    <select class="form-select form-select-sm" style="width: 150px;" id="statusFilter">
+                        <option value="">All Status</option>
+                        <option value="pending">Pending</option>
+                        <option value="under_review">Under Review</option>
+                        <option value="approved">Approved</option>
+                        <option value="rejected">Rejected</option>
+                        <option value="cancelled">Cancelled</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover" id="applicationsTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Applicant</th>
+                            <th>Pet</th>
+                            <th>Applied</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for app in applications %}
+                        <tr>
+                            <td><code>#{{ app.pk }}</code></td>
+                            <td>
+                                <strong>{{ app.full_name }}</strong><br>
+                                <small class="text-muted">{{ app.email }}</small>
+                            </td>
+                            <td>
+                                <a href="{% url 'adoption:pet_detail' app.pet.pk %}" class="text-decoration-none">
+                                    {{ app.pet.name }}
+                                </a>
+                                <br>
+                                <small class="text-muted">{{ app.pet.breed|default:"Unknown" }}</small>
+                            </td>
+                            <td>{{ app.applied_date|date:"M d, Y" }}</td>
+                            <td>
+                                <span class="badge bg-{{ app.status|default:'secondary' }}">
+                                    {{ app.get_status_display }}
+                                </span>
+                            </td>
+                            <td>
+                                <a href="{% url 'adoption:application_review' app.pk %}" 
+                                   class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-eye"></i> Review
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center py-5">
+                                <i class="bi bi-emoji-frown display-4 text-muted"></i>
+                                <p class="mt-3 text-muted">No applications found</p>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Simple table filtering
+    document.getElementById('searchInput').addEventListener('keyup', function() {
+        filterTable();
+    });
+    
+    document.getElementById('statusFilter').addEventListener('change', function() {
+        filterTable();
+    });
+    
+    function filterTable() {
+        const searchText = document.getElementById('searchInput').value.toLowerCase();
+        const statusFilter = document.getElementById('statusFilter').value;
+        const rows = document.querySelectorAll('#applicationsTable tbody tr');
+        
+        rows.forEach(row => {
+            const applicant = row.cells[1].textContent.toLowerCase();
+            const pet = row.cells[2].textContent.toLowerCase();
+            const status = row.cells[4].querySelector('.badge').textContent.toLowerCase();
+            
+            const matchesSearch = applicant.includes(searchText) || pet.includes(searchText);
+            const matchesStatus = !statusFilter || status.includes(statusFilter);
+            
+            row.style.display = (matchesSearch && matchesStatus) ? '' : 'none';
+        });
+    }
+</script>
+{% endblock %}

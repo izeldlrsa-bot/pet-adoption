@@ -1,0 +1,1 @@
+default_app_config = 'adoption.user_management.apps.UserManagementConfig'

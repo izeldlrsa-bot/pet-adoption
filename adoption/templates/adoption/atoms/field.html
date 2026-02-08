@@ -1,0 +1,188 @@
+<div class="form-group mb-4">
+    <!-- Field Label -->
+    <label for="{{ field.id_for_label }}" class="form-label fw-semibold mb-2">
+        {% if field.field.required %}
+        <span class="text-danger">*</span>
+        {% endif %}
+        {{ field.label }}
+    </label>
+    
+    <!-- Field Input -->
+    {% if field.field.widget.input_type == 'checkbox' %}
+    <div class="form-check form-switch">
+        {{ field|add_class:"form-check-input" }}
+        <label class="form-check-label" for="{{ field.id_for_label }}">
+            {{ field.label }}
+        </label>
+    </div>
+    
+    {% elif field.field.widget.input_type == 'radio' %}
+    <div class="btn-group" role="group" aria-label="{{ field.label }}">
+        {% for choice in field %}
+        <input type="radio" class="btn-check" name="{{ field.name }}" id="{{ choice.id_for_label }}" value="{{ choice.data.value }}" {% if choice.data.selected %}checked{% endif %}>
+        <label class="btn btn-outline-primary" for="{{ choice.id_for_label }}">
+            {{ choice.choice_label }}
+        </label>
+        {% endfor %}
+    </div>
+    
+    {% elif field.field.widget.input_type == 'select' or field.field.widget.input_type == 'selectmultiple' %}
+    {{ field|add_class:"form-select" }}
+    
+    {% elif field.field.widget.input_type == 'textarea' %}
+    {{ field|add_class:"form-control"|attr:"rows:4" }}
+    
+    {% elif field.field.widget.input_type == 'file' %}
+    <div class="input-group">
+        {{ field|add_class:"form-control" }}
+        <label class="input-group-text" for="{{ field.id_for_label }}">
+            <i class="bi bi-upload"></i>
+        </label>
+    </div>
+    
+    {% else %}
+    <!-- Text, Number, Email, Password, etc. -->
+    {{ field|add_class:"form-control" }}
+    {% endif %}
+    
+    <!-- Help Text -->
+    {% if field.help_text %}
+    <div class="form-text text-muted mt-2">
+        <i class="bi bi-info-circle me-1"></i>
+        {{ field.help_text|safe }}
+    </div>
+    {% endif %}
+    
+    <!-- Field Errors -->
+    {% if field.errors %}
+    <div class="alert alert-danger alert-dismissible fade show mt-2" role="alert">
+        <div class="d-flex align-items-center">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            <div>
+                <strong>Please correct this:</strong>
+                <ul class="mb-0 mt-1">
+                    {% for error in field.errors %}
+                    <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endif %}
+    
+    <!-- Character Counter (for textareas) -->
+    {% if field.field.widget.input_type == 'textarea' %}
+    <div class="d-flex justify-content-end mt-1">
+        <small class="text-muted character-counter">
+            <span class="character-count">0</span>/{{ field.field.max_length|default:"500" }} characters
+        </small>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Character Counter Script -->
+{% if field.field.widget.input_type == 'textarea' %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const textareaElement = document.getElementById('{{ field.id_for_label }}');
+        const counterElement = textareaElement.closest('.form-group').querySelector('.character-count');
+        
+        if (textareaElement && counterElement) {
+            // Update counter on input
+            textareaElement.addEventListener('input', function() {
+                counterElement.textContent = this.value.length;
+                
+                // Add warning if approaching limit
+                const maxLength = {{ field.field.max_length|default:"500" }};
+                if (this.value.length > maxLength * 0.9) {
+                    counterElement.classList.add('text-warning');
+                } else {
+                    counterElement.classList.remove('text-warning');
+                }
+                
+                if (this.value.length > maxLength) {
+                    counterElement.classList.add('text-danger');
+                } else {
+                    counterElement.classList.remove('text-danger');
+                }
+            });
+            
+            // Initial count
+            counterElement.textContent = textareaElement.value.length;
+        }
+    });
+</script>
+{% endif %}
+
+<!-- Field-specific CSS -->
+<style>
+    .form-group {
+        transition: all 0.3s ease;
+    }
+    
+    .form-group:focus-within {
+        transform: translateY(-2px);
+    }
+    
+    .form-control, .form-select {
+        border-radius: 8px;
+        border: 2px solid #e9ecef;
+        padding: 10px 15px;
+        transition: all 0.3s ease;
+    }
+    
+    .form-control:focus, .form-select:focus {
+        border-color: #86b7fe;
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+        transform: translateY(-2px);
+    }
+    
+    .form-check-input {
+        width: 3em;
+        height: 1.5em;
+        border-radius: 1em;
+    }
+    
+    .form-check-input:checked {
+        background-color: #0d6efd;
+        border-color: #0d6efd;
+    }
+    
+    .form-check-label {
+        margin-left: 10px;
+        font-weight: 500;
+    }
+    
+    .btn-group .btn {
+        border-radius: 6px !important;
+        margin-right: 5px;
+    }
+    
+    .btn-check:checked + .btn-outline-primary {
+        background-color: #0d6efd;
+        color: white;
+    }
+    
+    .character-counter {
+        font-size: 0.85rem;
+    }
+    
+    /* Error styling */
+    .is-invalid {
+        border-color: #dc3545 !important;
+    }
+    
+    .is-invalid:focus {
+        box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.25) !important;
+    }
+    
+    /* Success styling */
+    .is-valid {
+        border-color: #198754 !important;
+    }
+    
+    .is-valid:focus {
+        box-shadow: 0 0 0 0.25rem rgba(25, 135, 84, 0.25) !important;
+    }
+</style>

@@ -1,0 +1,179 @@
+{% extends 'adoption/user_management/base_user_management.html' %}
+
+{% block user_management_content %}
+<div class="row">
+    <div class="col-md-8">
+        <!-- User Info Card -->
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">User Details</h4>
+                <div class="action-buttons">
+                    <a href="{% url 'user_management:user_list' %}" class="btn btn-sm btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-1"></i> Back to List
+                    </a>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <table class="table table-borderless">
+                            <tr>
+                                <th width="40%">Username:</th>
+                                <td>
+                                    {{ user.username }}
+                                    {% if user.is_superuser %}
+                                        <span class="badge bg-danger ms-2">Superuser</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Email:</th>
+                                <td>{{ user.email }}</td>
+                            </tr>
+                            <tr>
+                                <th>Full Name:</th>
+                                <td>{{ user.first_name }} {{ user.last_name }}</td>
+                            </tr>
+                            <tr>
+                                <th>Date Joined:</th>
+                                <td>{{ user.date_joined|date:"F d, Y H:i" }}</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <table class="table table-borderless">
+                            <tr>
+                                <th width="40%">Status:</th>
+                                <td>
+                                    {% if user.is_active %}
+                                        <span class="badge bg-success">Active</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">Inactive</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Staff Status:</th>
+                                <td>
+                                    {% if user.is_staff %}
+                                        <span class="badge bg-primary">Staff Member</span>
+                                    {% else %}
+                                        <span class="badge bg-info">Regular User</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Last Login:</th>
+                                <td>
+                                    {% if user.last_login %}
+                                        {{ user.last_login|date:"F d, Y H:i" }}
+                                    {% else %}
+                                        <span class="text-muted">Never</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>User ID:</th>
+                                <td><code>{{ user.id }}</code></td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- User Groups (if you have groups) -->
+        {% if user.groups.all %}
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Groups</h5>
+            </div>
+            <div class="card-body">
+                {% for group in user.groups.all %}
+                    <span class="badge bg-secondary me-2">{{ group.name }}</span>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    
+    <!-- Sidebar Actions -->
+<div class="col-md-4">
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">Actions</h5>
+        </div>
+        <div class="card-body">
+            <div class="d-grid gap-2">
+                <!-- Active/Inactive Toggle -->
+                {% if user.is_active %}
+                <a href="{% url 'user_management:user_toggle_active' user.id %}" 
+                   class="btn btn-warning"
+                   onclick="return confirm('Are you sure you want to deactivate this user?')">
+                    <i class="fas fa-user-slash me-1"></i> Deactivate User
+                </a>
+                {% else %}
+                <a href="{% url 'user_management:user_toggle_active' user.id %}" 
+                   class="btn btn-success">
+                    <i class="fas fa-user-check me-1"></i> Activate User
+                </a>
+                {% endif %}
+                
+                <!-- Edit Button -->
+                <a href="{% url 'user_management:user_edit' user.id %}" 
+                   class="btn btn-primary">
+                    <i class="fas fa-edit me-1"></i> Edit User
+                </a>
+                
+                <!-- Staff Status Toggle -->
+                {% if user.is_staff %}
+                <a href="{% url 'user_management:user_toggle_staff' user.id %}" 
+                   class="btn btn-outline-danger"
+                   onclick="return confirm('Remove staff privileges from this user?')">
+                    <i class="fas fa-user-tie me-1"></i> Remove Staff Status
+                </a>
+                {% else %}
+                <a href="{% url 'user_management:user_toggle_staff' user.id %}" 
+                   class="btn btn-outline-primary">
+                    <i class="fas fa-user-tie me-1"></i> Make Staff
+                </a>
+                {% endif %}
+                
+                <hr>
+                
+                <!-- Delete Button -->
+                {% if request.user.is_superuser and request.user != user %}
+                <a href="{% url 'user_management:user_delete' user.id %}" 
+                   class="btn btn-outline-danger">
+                    <i class="fas fa-trash me-1"></i> Delete User
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Quick Stats -->
+    <div class="card mt-4">
+        <div class="card-header">
+            <h5 class="mb-0">Quick Stats</h5>
+        </div>
+        <div class="card-body">
+            <div class="text-center">
+                <div class="mb-3">
+                    <h2 class="text-primary">0</h2>
+                    <small class="text-muted">Adoption Applications</small>
+                </div>
+                <div class="mb-3">
+                    <h2 class="text-success">0</h2>
+                    <small class="text-muted">Approved</small>
+                </div>
+                <div>
+                    <h2 class="text-warning">0</h2>
+                    <small class="text-muted">Pending</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+{% endblock %}

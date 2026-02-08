@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pet Adoption Center - Find Your New Best Friend</title>
+    <meta name="description" content="Adopt a loving pet today. Find dogs, cats, and other animals waiting for their forever home at our adoption center.">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --primary-color: #FF6B6B;
+            --secondary-color: #4ECDC4;
+            --accent-color: #FFD166;
+            --dark-color: #2E282A;
+            --light-color: #F7FFF7;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--dark-color);
+        }
+        
+        /* FIXED HERO SECTION */
+        .hero-section {
+            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), 
+                        url('https://images.unsplash.com/photo-1548199973-03cce0bbc87b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&h=1080&q=80');
+            background-size: cover;
+            background-position: center 10%; /* Adjusted to show faces */
+            background-repeat: no-repeat;
+            color: white;
+            padding: 140px 0 80px;
+            text-align: center;
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+        }
+        
+        @media (max-width: 768px) {
+            .hero-section {
+                background-position: center 35%;
+                padding: 100px 0 60px;
+                min-height: 70vh;
+            }
+        }
+        
+        .hero-content {
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 25px;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.3);
+        }
+        
+        .hero-subtitle {
+            font-size: 1.5rem;
+            margin-bottom: 40px;
+            opacity: 0.95;
+        }
+        
+        /* Search Bar */
+        .search-section {
+            background: white;
+            padding: 40px 0;
+            border-radius: 20px;
+            margin-top: -40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            position: relative;
+            z-index: 10;
+        }
+        
+        .search-form {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .filter-group {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 5px;
+        }
+        
+        /* Why Adopt Section */
+        .why-adopt-section {
+            padding: 100px 0;
+            background: var(--light-color);
+        }
+        
+        .benefit-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            height: 100%;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            transition: transform 0.3s;
+        }
+        
+        .benefit-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .benefit-icon {
+            width: 70px;
+            height: 70px;
+            background: var(--primary-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 25px;
+            color: white;
+            font-size: 28px;
+        }
+        
+        /* Featured Pets */
+        .pets-section {
+            padding: 100px 0;
+        }
+        
+        .pet-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+            height: 100%;
+        }
+        
+        .pet-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+        }
+        
+        .pet-image {
+            height: 250px;
+            width: 100%;
+            object-fit: cover;
+        }
+        
+        .pet-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: var(--accent-color);
+            color: var(--dark-color);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        .pet-info {
+            padding: 25px;
+        }
+        
+        .pet-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .pet-personality {
+            color: var(--primary-color);
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        
+        /* Process Section */
+        .process-section {
+            padding: 100px 0;
+            background: linear-gradient(135deg, var(--secondary-color), #3DBBB8);
+            color: white;
+        }
+        
+        .process-step {
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .step-number {
+            width: 60px;
+            height: 60px;
+            background: white;
+            color: var(--secondary-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin: 0 auto 25px;
+        }
+        
+        /* Success Stories */
+        .stories-section {
+            padding: 100px 0;
+            background: #f8f9fa;
+        }
+        
+        .story-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        }
+        
+        .story-image {
+            height: 200px;
+            width: 100%;
+            object-fit: cover;
+        }
+        
+        /* Ways to Help */
+        .help-section {
+            padding: 100px 0;
+        }
+        
+        .help-card {
+            background: white;
+            border-radius: 15px;
+            padding: 40px 30px;
+            text-align: center;
+            height: 100%;
+            border: 2px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .help-card:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-5px);
+        }
+        
+        .help-icon {
+            font-size: 3rem;
+            color: var(--primary-color);
+            margin-bottom: 25px;
+        }
+        
+        /* Buttons */
+        .btn-primary-custom {
+            background: var(--primary-color);
+            color: white;
+            padding: 15px 40px;
+            border-radius: 30px;
+            font-weight: 600;
+            border: none;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn-primary-custom:hover {
+            background: #ff5252;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(255,107,107,0.3);
+            color: white;
+        }
+        
+        .btn-secondary-custom {
+            background: var(--secondary-color);
+            color: white;
+            padding: 15px 40px;
+            border-radius: 30px;
+            font-weight: 600;
+            border: none;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn-secondary-custom:hover {
+            background: #3db9b3;
+            transform: translateY(-3px);
+            color: white;
+        }
+        
+        /* Section Headers */
+        .section-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+        
+        .section-title {
+            font-size: 2.8rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            color: var(--dark-color);
+        }
+        
+        .section-subtitle {
+            font-size: 1.2rem;
+            color: #666;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        
+        /* Navigation */
+        .navbar {
+            background: rgba(255, 255, 255, 0.98);
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+            padding: 15px 0;
+        }
+        
+        .nav-link {
+            font-weight: 500;
+            margin: 0 10px;
+            color: var(--dark-color) !important;
+        }
+        
+        .nav-link:hover {
+            color: var(--primary-color) !important;
+        }
+        
+        /* Footer */
+        .footer {
+            background: var(--dark-color);
+            color: white;
+            padding: 70px 0 30px;
+        }
+        
+        .footer h5 {
+            margin-bottom: 25px;
+        }
+        
+        .footer-links a {
+            color: #bbb;
+            text-decoration: none;
+            display: block;
+            margin-bottom: 10px;
+            transition: color 0.3s;
+        }
+        
+        .footer-links a:hover {
+            color: white;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            
+            .hero-subtitle {
+                font-size: 1.2rem;
+            }
+            
+            .section-title {
+                font-size: 2.2rem;
+            }
+            
+            .search-section {
+                margin-top: -20px;
+            }
+        }
+        
+        .stats-bar {
+            background: var(--dark-color);
+            color: white;
+            padding: 20px 0;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent-color);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="/" style="color: var(--primary-color);">
+                <i class="fas fa-paw me-2"></i>Pet Adoption Center
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'pet_adoption:pet_list' %}">Find a Pet</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#why-adopt">Why Adopt?</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#featured-pets">Featured Pets</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#process">Adoption Process</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#ways-to-help">Get Involved</a>
+                    </li>
+                    
+                    <!-- Admin Dropdown (only for staff users) -->
+                    {% if user.is_authenticated and user.is_staff %}
+                    <li class="nav-item dropdown ms-2">
+                        <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button" 
+                           data-bs-toggle="dropdown" aria-expanded="false" style="color: var(--primary-color); font-weight: 600;">
+                            <i class="bi bi-shield-check me-1"></i> Admin
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="adminDropdown">
+                            <li>
+                                <h6 class="dropdown-header">Dashboard</h6>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'adoption:admin_dashboard' %}">
+                                    <i class="bi bi-speedometer2 me-2"></i> Admin Dashboard
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <h6 class="dropdown-header">Applications</h6>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'adoption:application_list' %}">
+                                    <i class="bi bi-file-text me-2"></i> Review Applications
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <h6 class="dropdown-header">User Management</h6>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'user_management:user_list' %}">
+                                    <i class="bi bi-people-fill me-2"></i> Manage Users
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'user_management:user_create' %}">
+                                    <i class="bi bi-person-plus me-2"></i> Create User
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <h6 class="dropdown-header">System Admin</h6>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="/admin/" target="_blank">
+                                    <i class="bi bi-speedometer2 me-2"></i> Django Admin
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    {% endif %}
+                    
+                    {% if user.is_authenticated %}
+                    <li class="nav-item ms-3">
+                        <a href="{% url 'user_management:profile' %}" class="btn btn-outline-primary">
+                            <i class="fas fa-user me-2"></i>{{ user.username }}
+                        </a>
+                    </li>
+                    <li class="nav-item ms-2">
+                        <form method="post" action="{% url 'logout' %}" class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-outline-danger">
+                                <i class="fas fa-sign-out-alt me-2"></i>Logout
+                            </button>
+                        </form>
+                    </li>
+                    {% else %}
+                    <li class="nav-item ms-3">
+                        <a href="/accounts/login/" class="btn btn-primary-custom">
+                            <i class="fas fa-user me-2"></i>Login
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 1. HERO SECTION -->
+    <section class="hero-section">
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="hero-title">Find Your New Best Friend</h1>
+                <p class="hero-subtitle">
+                    Give a second chance to a grateful heart. Hundreds of loving pets are waiting 
+                    to meet their perfect match.
+                </p>
+                <div class="mt-4">
+                    <a href="{% url 'pet_adoption:pet_list' %}" class="btn btn-primary-custom btn-lg">
+                        <i class="fas fa-search me-2"></i>View Adoptable Pets
+                    </a>
+                    <a href="{% url 'pet_adoption:pet_list' %}" class="btn btn-outline-light btn-lg ms-3">
+                        <i class="fas fa-heart me-2"></i>Meet Our Pets
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+   
+
+   
+
+    <!-- 3. WHY ADOPT SECTION -->
+    <section id="why-adopt" class="why-adopt-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Why Choose Adoption?</h2>
+                <p class="section-subtitle">Discover the amazing benefits of giving a shelter pet a forever home</p>
+            </div>
+            
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="benefit-card text-center">
+                        <div class="benefit-icon">
+                            <i class="fas fa-heart"></i>
+                        </div>
+                        <h3 class="h4 fw-bold mb-3">Save a Life</h3>
+                        <p>Every adoption makes space for another animal in need. You're not just getting a pet—you're saving a life and helping reduce shelter overpopulation.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="benefit-card text-center">
+                        <div class="benefit-icon" style="background: var(--secondary-color);">
+                            <i class="fas fa-user-check"></i>
+                        </div>
+                        <h3 class="h4 fw-bold mb-3">Perfect Match</h3>
+                        <p>Our staff spends time with each animal, so we can match you with a pet whose personality fits your lifestyle. We know them better than anyone!</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="benefit-card text-center">
+                        <div class="benefit-icon" style="background: var(--accent-color); color: var(--dark-color);">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <h3 class="h4 fw-bold mb-3">Health Ready</h3>
+                        <p>All our pets are vet-checked, vaccinated, spayed/neutered, and microchipped before adoption. Start with a healthy, happy companion.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4. FEATURED PETS -->
+    <section id="featured-pets" class="pets-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Featured Pets</h2>
+                <p class="section-subtitle">These wonderful animals have been waiting the longest for their forever homes</p>
+            </div>
+            
+            <div class="row g-4">
+                <div class="col-md-3">
+                    <div class="pet-card">
+                        <div class="position-relative">
+                            <img src="https://images.unsplash.com/photo-1552053831-71594a27632d?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" 
+                                 alt="Max the Dog" class="pet-image">
+                            <span class="pet-badge">Ready to Go!</span>
+                        </div>
+                        <div class="pet-info">
+                            <h3 class="pet-name">Max</h3>
+                            <div class="pet-personality">The Professional Couch Potato</div>
+                            <p>This sweet 4-year-old Lab mix loves lazy afternoons, belly rubs, and gentle walks. He's great with kids and other dogs.</p>
+                            <a href="#" class="btn btn-primary-custom w-100 mt-3">
+                                <i class="fas fa-heart me-2"></i>Adopt Max
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="pet-card">
+                        <div class="position-relative">
+                            <img src="https://images.unsplash.com/photo-1592194996308-7b43878e84a6?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" 
+                                 alt="Luna the Cat" class="pet-image">
+                            <span class="pet-badge">Ready to Go!</span>
+                        </div>
+                        <div class="pet-info">
+                            <h3 class="pet-name">Luna</h3>
+                            <div class="pet-personality">The Window Watcher</div>
+                            <p>3-year-old Luna enjoys sunny spots and bird watching. She's independent yet affectionate, perfect for apartment living.</p>
+                            <a href="#" class="btn btn-primary-custom w-100 mt-3">
+                                <i class="fas fa-heart me-2"></i>Adopt Luna
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="pet-card">
+                        <div class="position-relative">
+                            <img src="https://images.unsplash.com/photo-1583512603805-3cc6b41f3edb?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" 
+                                 alt="Charlie the Dog" class="pet-image">
+                            <span class="pet-badge">Special Needs</span>
+                        </div>
+                        <div class="pet-info">
+                            <h3 class="pet-name">Charlie</h3>
+                            <div class="pet-personality">The Gentle Giant</div>
+                            <p>Charlie is a 7-year-old with a heart of gold. He moves a bit slower but has endless love to give. Perfect for a calm home.</p>
+                            <a href="#" class="btn btn-primary-custom w-100 mt-3">
+                                <i class="fas fa-heart me-2"></i>Adopt Charlie
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="pet-card">
+                        <div class="position-relative">
+                            <img src="https://images.unsplash.com/photo-1595433707802-6b2626ef1c91?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" 
+                                 alt="Bella the Rabbit" class="pet-image">
+                            <span class="pet-badge">Ready to Go!</span>
+                        </div>
+                        <div class="pet-info">
+                            <h3 class="pet-name">Bella</h3>
+                            <div class="pet-personality">The Curious Hopper</div>
+                            <p>This 2-year-old rabbit loves exploring and gentle pets. She's litter-trained and ready for a loving home with space to hop.</p>
+                            <a href="#" class="btn btn-primary-custom w-100 mt-3">
+                                <i class="fas fa-heart me-2"></i>Adopt Bella
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-5">
+                <a href="#" class="btn btn-secondary-custom">
+                    <i class="fas fa-paw me-2"></i>View All Available Pets
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- 5. TRUST SIGNALS & PROCESS -->
+    <section id="process" class="process-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title text-white">Simple Adoption Process</h2>
+                <p class="section-subtitle text-white">Three easy steps to bring your new friend home</p>
+            </div>
+            
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="process-step">
+                        <div class="step-number">1</div>
+                        <h3 class="h4 fw-bold mb-3">Browse & Apply</h3>
+                        <p>Search our available pets online and submit a no-obligation application.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="process-step">
+                        <div class="step-number">2</div>
+                        <h3 class="h4 fw-bold mb-3">Meet & Greet</h3>
+                        <p>Visit the shelter to meet your potential pet and ensure it's the perfect match.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="process-step">
+                        <div class="step-number">3</div>
+                        <h3 class="h4 fw-bold mb-3">Home Sweet Home</h3>
+                        <p>Complete the paperwork and bring your new family member home!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Success Stories -->
+    <section class="stories-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Happy Tails</h2>
+                <p class="section-subtitle">See how our adopted pets are thriving in their new homes</p>
+            </div>
+            
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="story-card">
+                        <img src="https://images.unsplash.com/photo-1541364983171-a8ba01e95cfc?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" 
+                             alt="Happy dog with family" class="story-image">
+                        <div class="p-4">
+                            <h4 class="fw-bold">Buddy's New Family</h4>
+                            <p>"Buddy has brought so much joy to our home. The adoption process was smooth and the staff was incredibly helpful!"</p>
+                            <div class="d-flex align-items-center">
+                                <div class="fw-bold">- The Johnson Family</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="story-card">
+                        <img src="https://images.unsplash.com/photo-1561948955-570b270e7c36?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80
+
+
+                             alt="Happy cat in new home" class="story-image">
+                        <div class="p-4">
+                            <h4 class="fw-bold">Whiskers Found Her Forever Home</h4>
+                            <p>"We couldn't imagine our lives without Whiskers. She was the perfect match for our family from day one."</p>
+                            <div class="d-flex align-items-center">
+                                <div class="fw-bold">- Sarah & Mike</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="story-card">
+                        <img src="https://images.unsplash.com/photo-1583337130417-3346a1be7dee?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" 
+                             alt="Dog at the beach" class="story-image">
+                        <div class="p-4">
+                            <h4 class="fw-bold">Rex's Beach Adventures</h4>
+                            <p>"Adopting Rex was the best decision we ever made. He loves his new life full of beach walks and belly rubs!"</p>
+                            <div class="d-flex align-items-center">
+                                <div class="fw-bold">- David & Emily</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+           
+        </div>
+    </section>
+
+    <!-- 6. WAYS TO HELP -->
+    <section id="ways-to-help" class="help-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Other Ways to Help</h2>
+                <p class="section-subtitle">Not ready to adopt? You can still make a difference!</p>
+            </div>
+            
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="help-card">
+                        <div class="help-icon">
+                            <i class="fas fa-hand-holding-usd"></i>
+                        </div>
+                        <h3 class="h4 fw-bold mb-3">Donate</h3>
+                        <p class="mb-4">Your contribution helps provide food, medical care, and shelter for animals in need.</p>
+                        <a href="#" class="btn btn-primary-custom">
+                            <i class="fas fa-donate me-2"></i>Support Our Mission
+                        </a>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="help-card">
+                        <div class="help-icon">
+                            <i class="fas fa-home"></i>
+                        </div>
+                        <h3 class="h4 fw-bold mb-3">Foster</h3>
+                        <p class="mb-4">Provide temporary housing for pets while they wait for their forever homes.</p>
+                        <a href="#" class="btn btn-secondary-custom">
+                            <i class="fas fa-heart me-2"></i>Become a Foster
+                        </a>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="help-card">
+                        <div class="help-icon">
+                            <i class="fas fa-hands-helping"></i>
+                        </div>
+                        <h3 class="h4 fw-bold mb-3">Volunteer</h3>
+                        <p class="mb-4">Give your time and love by helping with daily operations at our shelter.</p>
+                        <a href="#" class="btn btn-primary-custom">
+                            <i class="fas fa-users me-2"></i>Join Our Team
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 mb-5">
+                    <h4 class="fw-bold mb-4">
+                        <i class="fas fa-paw me-2"></i>Pet Adoption Center
+                    </h4>
+                    <p>Helping pets find loving homes through responsible adoption since 2010.</p>
+                    <div class="mt-4">
+                        <h6 class="fw-bold mb-3">Visit Our Shelter</h6>
+                        <p>1234 Animal Lane<br>Adoption City, AC 12345<br>Open Daily: 10AM - 6PM</p>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-6 mb-5">
+                    <h5 class="fw-bold mb-4">Quick Links</h5>
+                    <div class="footer-links">
+                        <a href="{% url 'pet_adoption:pet_list' %}">Find a Pet</a>
+                        <a href="#why-adopt">Why Adopt?</a>
+                        <a href="#process">Adoption Process</a>
+                        <a href="#ways-to-help">Get Involved</a>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-5">
+                    <h5 class="fw-bold mb-4">Resources</h5>
+                    <div class="footer-links">
+                        <a href="/accounts/login/">Admin Login</a>
+                        <a href="/accounts/register/">Create Account</a>
+                        <a href="#">Adoption FAQ</a>
+                        <a href="#">Pet Care Resources</a>
+                    </div>
+                </div>
+                <div class="col-lg-3 mb-5">
+                    <h5 class="fw-bold mb-4">Contact Us</h5>
+                    <p class="mb-3">
+                        <i class="fas fa-phone me-2"></i>(123) 456-7890
+                    </p>
+                    <p class="mb-3">
+                        <i class="fas fa-envelope me-2"></i>info@petadoption.com
+                    </p>
+                    <p class="mb-3">
+                        <i class="fas fa-clock me-2"></i>Mon-Sun: 10AM - 6PM
+                    </p>
+                </div>
+            </div>
+            <hr class="my-5" style="border-color: rgba(255,255,255,0.1);">
+            <div class="row">
+                <div class="col-md-6">
+                    <p>&copy; 2024 Pet Adoption Center. All rights reserved.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p>Making tails wag since 2010</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Smooth scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+        
+        // Navbar scroll effect
+        window.addEventListener('scroll', function() {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 100) {
+                navbar.style.background = 'rgba(255, 255, 255, 0.98)';
+                navbar.style.boxShadow = '0 5px 20px rgba(0,0,0,0.1)';
+            } else {
+                navbar.style.background = 'rgba(255, 255, 255, 0.98)';
+            }
+        });
+    </script>
+</body>
+</html>

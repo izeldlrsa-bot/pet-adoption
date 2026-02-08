@@ -1,0 +1,45 @@
+{% extends 'adoption/pages/base.html' %}
+
+{% block extra_css %}
+<style>
+    .user-management-container {
+        padding: 20px;
+        background-color: #f8f9fa;
+        min-height: 100vh;
+    }
+    .card {
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+        border: none;
+        margin-bottom: 20px;
+    }
+    .card-header {
+        background-color: #f1f3f4;
+        border-bottom: 1px solid #dee2e6;
+    }
+    .badge-admin {
+        background-color: #6610f2;
+    }
+    .badge-staff {
+        background-color: #20c997;
+    }
+    .badge-active {
+        background-color: #198754;
+    }
+    .badge-inactive {
+        background-color: #6c757d;
+    }
+    .action-buttons .btn {
+        margin-right: 5px;
+        margin-bottom: 5px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="user-management-container">
+    <div class="container-fluid">
+        {% block user_management_content %}
+        {% endblock %}
+    </div>
+</div>
+{% endblock %}

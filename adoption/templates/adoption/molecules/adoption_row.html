@@ -1,0 +1,101 @@
+<tr class="hover-row align-middle">
+    <!-- Name with link -->
+    <td class="ps-4">
+        <a href="{% url 'adoption:pet_detail' pet.pk %}" class="text-decoration-none text-dark fw-semibold">
+            <div class="d-flex align-items-center">
+                <div class="pet-avatar me-3">
+                    {% if pet.is_dog or pet.animal_type == 'Dog' %}
+                    <i class="bi bi-bug text-primary fs-5"></i>
+                    {% elif pet.is_cat or pet.animal_type == 'Cat' %}
+                    <i class="bi bi-bug-fill text-warning fs-5"></i>
+                    {% else %}
+                    <i class="bi bi-question-circle text-secondary fs-5"></i>
+                    {% endif %}
+                </div>
+                <div>
+                    <span class="d-block fw-bold">{{ pet.name }}</span>
+                    <small class="text-muted">ID: {{ pet.pk }}</small>
+                </div>
+            </div>
+        </a>
+    </td>
+
+    <!-- Breed -->
+    <td>
+        <span class="badge bg-info text-dark">{{ pet.breed|default:"Unknown" }}</span>
+    </td>
+
+    <!-- Dog (Boolean) -->
+    <td class="text-center">
+        {% if pet.is_dog or pet.animal_type == 'Dog' %}
+        <span class="badge bg-primary">
+            <i class="bi bi-check-circle me-1"></i>Yes
+        </span>
+        {% else %}
+        <span class="badge bg-secondary">
+            <i class="bi bi-x-circle me-1"></i>No
+        </span>
+        {% endif %}
+    </td>
+
+    <!-- Cat (Boolean) -->
+    <td class="text-center">
+        {% if pet.is_cat or pet.animal_type == 'Cat' %}
+        <span class="badge bg-warning text-dark">
+            <i class="bi bi-check-circle me-1"></i>Yes
+        </span>
+        {% else %}
+        <span class="badge bg-secondary">
+            <i class="bi bi-x-circle me-1"></i>No
+        </span>
+        {% endif %}
+    </td>
+
+    <!-- Age -->
+    <td class="text-center">
+        <div class="d-flex flex-column align-items-center">
+            <span class="fw-bold fs-5">{{ pet.age|default:"N/A" }}</span>
+            <small class="text-muted">years</small>
+        </div>
+    </td>
+
+    <!-- Adoption Status -->
+    <td class="text-center">
+        {% if pet.adopted or pet.status == 'Adopted' %}
+        <span class="badge bg-success py-2 px-3">
+            <i class="bi bi-heart-fill me-1"></i>Adopted
+        </span>
+        {% else %}
+        <span class="badge bg-danger py-2 px-3">
+            <i class="bi bi-heart me-1"></i>Available
+        </span>
+        {% endif %}
+    </td>
+
+    <!-- Actions -->
+    <td class="text-center pe-4">
+        <div class="action-buttons d-flex gap-2 justify-content-center">
+            <!-- View Button - ALWAYS VISIBLE for logged-in users -->
+            <a href="{% url 'adoption:pet_detail' pet.pk %}" class="btn btn-sm btn-outline-primary"
+               title="View Details" data-bs-toggle="tooltip">
+                <i class="bi bi-eye"></i>
+            </a>
+
+            <!-- Edit Button - ONLY for ADMINS -->
+            {% if user.is_authenticated and user.profile.role == 'admin' %}
+            <a href="{% url 'adoption:pet_update' pet.pk %}" class="btn btn-sm btn-outline-warning"
+               title="Edit Pet" data-bs-toggle="tooltip">
+                <i class="bi bi-pencil"></i>
+            </a>
+            {% endif %}
+
+            <!-- Delete Button - ONLY for ADMINS -->
+            {% if user.is_authenticated and user.profile.role == 'admin' %}
+            <a href="{% url 'adoption:pet_delete' pet.pk %}" class="btn btn-sm btn-outline-danger"
+               title="Delete Pet" data-bs-toggle="tooltip">
+                <i class="bi bi-trash"></i>
+            </a>
+            {% endif %}
+        </div>
+    </td>
+</tr>

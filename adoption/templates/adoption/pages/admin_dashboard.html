@@ -1,0 +1,216 @@
+{% extends 'adoption/pages/base.html' %}
+
+{% block title %}Admin Dashboard - Pet Adoption System{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Header -->
+    <div class="mb-5">
+        <h1 class="h2 fw-bold mb-2">
+            <i class="bi bi-speedometer2 me-2"></i>Admin Dashboard
+        </h1>
+        <p class="text-muted mb-0">Manage pets, applications, and monitor the adoption system</p>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="row mb-5">
+        <!-- Total Pets -->
+        <div class="col-md-3 mb-4">
+            <div class="card shadow-sm border-0" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title fw-6 mb-2">Total Pets</h6>
+                            <h3 class="fw-bold mb-0">{{ total_pets }}</h3>
+                        </div>
+                        <div style="font-size: 3rem; opacity: 0.3;">
+                            <i class="bi bi-file-earmark"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Available Pets -->
+        <div class="col-md-3 mb-4">
+            <div class="card shadow-sm border-0" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white;">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title fw-6 mb-2">Available</h6>
+                            <h3 class="fw-bold mb-0">{{ available_pets }}</h3>
+                        </div>
+                        <div style="font-size: 3rem; opacity: 0.3;">
+                            <i class="bi bi-check-circle"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Adopted Pets -->
+        <div class="col-md-3 mb-4">
+            <div class="card shadow-sm border-0" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white;">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title fw-6 mb-2">Adopted</h6>
+                            <h3 class="fw-bold mb-0">{{ adopted_pets }}</h3>
+                        </div>
+                        <div style="font-size: 3rem; opacity: 0.3;">
+                            <i class="bi bi-heart-fill"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pending Applications -->
+        <div class="col-md-3 mb-4">
+            <div class="card shadow-sm border-0" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); color: white;">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title fw-6 mb-2">Pending Apps</h6>
+                            <h3 class="fw-bold mb-0">{{ pending_applications }}</h3>
+                        </div>
+                        <div style="font-size: 3rem; opacity: 0.3;">
+                            <i class="bi bi-clock-history"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Action Cards -->
+    <div class="row mb-5">
+        <div class="col-md-4 mb-4">
+            <div class="card shadow border-0 h-100">
+                <div class="card-body text-center py-5">
+                    <div class="mb-3">
+                        <i class="bi bi-file-text" style="font-size: 3rem; color: #FF6B6B;"></i>
+                    </div>
+                    <h5 class="card-title fw-bold mb-2">Review Applications</h5>
+                    <p class="text-muted mb-4">View all adoption applications and manage approvals</p>
+                    <a href="{% url 'adoption:application_list' %}" class="btn btn-primary btn-sm">
+                        <i class="bi bi-arrow-right me-2"></i>Go to Applications
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+            <div class="card shadow border-0 h-100">
+                <div class="card-body text-center py-5">
+                    <div class="mb-3">
+                        <i class="bi bi-plus-circle" style="font-size: 3rem; color: #FF6B6B;"></i>
+                    </div>
+                    <h5 class="card-title fw-bold mb-2">Add New Pet</h5>
+                    <p class="text-muted mb-4">Add a new adoptable pet to the system</p>
+                    <a href="{% url 'adoption:pet_create' %}" class="btn btn-primary btn-sm">
+                        <i class="bi bi-arrow-right me-2"></i>Add Pet
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+            <div class="card shadow border-0 h-100">
+                <div class="card-body text-center py-5">
+                    <div class="mb-3">
+                        <i class="bi bi-list" style="font-size: 3rem; color: #FF6B6B;"></i>
+                    </div>
+                    <h5 class="card-title fw-bold mb-2">Manage Pets</h5>
+                    <p class="text-muted mb-4">View and edit all pets in the system</p>
+                    <a href="{% url 'adoption:pet_list' %}" class="btn btn-primary btn-sm">
+                        <i class="bi bi-arrow-right me-2"></i>Manage Pets
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Applications Table -->
+    <div class="card shadow">
+        <div class="card-header bg-light border-bottom">
+            <h5 class="mb-0"><i class="bi bi-file-earmark-text me-2"></i>Recent Applications</h5>
+        </div>
+        <div class="card-body">
+            {% if recent_applications %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Applicant</th>
+                            <th>Pet</th>
+                            <th>Applied Date</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for app in recent_applications %}
+                        <tr>
+                            <td>
+                                <strong>{{ app.full_name }}</strong>
+                                <br>
+                                <small class="text-muted">{{ app.email }}</small>
+                            </td>
+                            <td>{{ app.pet.name }}</td>
+                            <td>{{ app.applied_date|date:"M d, Y" }}</td>
+                            <td>
+                                {% if app.status == 'pending' %}
+                                    <span class="badge bg-warning">Pending</span>
+                                {% elif app.status == 'under_review' %}
+                                    <span class="badge bg-info">Under Review</span>
+                                {% elif app.status == 'approved' %}
+                                    <span class="badge bg-success">Approved</span>
+                                {% elif app.status == 'rejected' %}
+                                    <span class="badge bg-danger">Rejected</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">{{ app.get_status_display }}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{% url 'adoption:application_review' app.id %}" class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-eye"></i> Review
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="alert alert-info" role="alert">
+                <i class="bi bi-info-circle me-2"></i>
+                No recent applications yet. Users will apply for pets here!
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        border-radius: 12px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1) !important;
+    }
+
+    .btn-primary {
+        background-color: #FF6B6B;
+        border-color: #FF6B6B;
+    }
+
+    .btn-primary:hover {
+        background-color: #FF5252;
+        border-color: #FF5252;
+    }
+</style>
+{% endblock %}

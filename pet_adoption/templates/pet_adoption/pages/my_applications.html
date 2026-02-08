@@ -1,0 +1,529 @@
+<!-- pet_adoption/templates/pet_adoption/pages/my_applications.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Adoption Applications - Pet Adoption</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    
+    <style>
+        :root {
+            --primary-color: #FF6B6B;
+            --primary-hover: #FF5252;
+            --secondary-color: #FF8787;
+        }
+        body { 
+            padding-top: 20px; 
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            min-height: 100vh;
+        }
+        .applications-card { 
+            background: white; 
+            border-radius: 20px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .status-badge {
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+        .status-pending {
+            background: linear-gradient(135deg, #ffd166 0%, #ffc043 100%);
+            color: #7a5b00;
+        }
+        .status-under_review {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+        }
+        .status-approved {
+            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+            color: white;
+        }
+        .status-rejected {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+        }
+        .status-cancelled {
+            background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+            color: white;
+        }
+        .application-card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+        .application-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+        .pet-image-container {
+            width: 120px;
+            height: 120px;
+            border-radius: 12px;
+            overflow: hidden;
+            background: #f8f9fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .pet-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+        .empty-icon {
+            font-size: 4rem;
+            color: #dee2e6;
+            margin-bottom: 20px;
+        }
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+        }
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 15px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #e9ecef;
+        }
+        .timeline-item {
+            position: relative;
+            margin-bottom: 20px;
+        }
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -25px;
+            top: 5px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            border: 3px solid white;
+            box-shadow: 0 0 0 3px var(--primary-color);
+        }
+        .btn-view {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+            border: none;
+            padding: 10px 25px;
+            border-radius: 10px;
+            color: white;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .btn-view:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+            color: white;
+        }
+        .filter-badge {
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .filter-badge:hover {
+            transform: scale(1.05);
+        }
+        .filter-badge.active {
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark mb-4" style="background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'landing' %}">
+                <i class="bi bi-house-heart"></i> Pet Adoption
+            </a>
+            <div>
+                <a class="btn btn-outline-light me-2" href="{% url 'pet_adoption:pet_list' %}">
+                    <i class="bi bi-search"></i> Browse Pets
+                </a>
+                <a class="btn btn-light" href="{% url 'pet_adoption:pet_list' %}">
+                    <i class="bi bi-plus-circle"></i> Adopt Another
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Page Header -->
+        <div class="row mb-5">
+            <div class="col">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h1 class="display-5 fw-bold text-dark">
+                            <i class="bi bi-file-text text-primary"></i> My Adoption Applications
+                        </h1>
+                        <p class="lead text-muted">
+                            Track the status of your pet adoption applications
+                        </p>
+                    </div>
+                    <div class="text-end">
+                        <div class="badge bg-primary fs-6 py-2 px-3">
+                            <i class="bi bi-clock-history"></i> {{ status_counts.all }} application{{ status_counts.all|pluralize }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Status Filters -->
+        <div class="row mb-4">
+            <div class="col">
+                <div class="applications-card p-4 mb-4">
+                    <h5 class="fw-semibold mb-3">
+                        <i class="bi bi-filter"></i> Filter by Status
+                    </h5>
+                    <div class="d-flex flex-wrap gap-2">
+                        <a href="?status=all" class="badge bg-secondary text-decoration-none filter-badge py-2 px-3 fs-6 {% if not request.GET.status or request.GET.status == 'all' %}active{% endif %}">
+                            All ({{ status_counts.all }})
+                        </a>
+                        <a href="?status=pending" class="badge status-pending text-decoration-none filter-badge py-2 px-3 fs-6 {% if request.GET.status == 'pending' %}active{% endif %}">
+                            Pending ({{ status_counts.pending }})
+                        </a>
+                        <a href="?status=under_review" class="badge status-under_review text-decoration-none filter-badge py-2 px-3 fs-6 {% if request.GET.status == 'under_review' %}active{% endif %}">
+                            Under Review ({{ status_counts.under_review }})
+                        </a>
+                        <a href="?status=approved" class="badge status-approved text-decoration-none filter-badge py-2 px-3 fs-6 {% if request.GET.status == 'approved' %}active{% endif %}">
+                            Approved ({{ status_counts.approved }})
+                        </a>
+                        <a href="?status=rejected" class="badge status-rejected text-decoration-none filter-badge py-2 px-3 fs-6 {% if request.GET.status == 'rejected' %}active{% endif %}">
+                            Rejected ({{ status_counts.rejected }})
+                        </a>
+                        <a href="?status=cancelled" class="badge status-cancelled text-decoration-none filter-badge py-2 px-3 fs-6 {% if request.GET.status == 'cancelled' %}active{% endif %}">
+                            Cancelled ({{ status_counts.cancelled }})
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Applications List -->
+        <div class="row">
+            <div class="col">
+                <div class="applications-card p-4">
+                    {% if applications %}
+                        <div class="row g-4">
+                            {% for application in applications %}
+                                <div class="col-12">
+                                    <div class="application-card p-4">
+                                        <div class="row align-items-center">
+                                            <!-- Pet Image & Info -->
+                                            <div class="col-md-3">
+                                                <div class="d-flex align-items-center">
+                                                    <div class="pet-image-container me-3">
+                                                        {% if application.pet.main_image %}
+                                                        <img src="{{ application.pet.main_image.url }}" 
+                                                             alt="{{ application.pet.name }}" 
+                                                             class="pet-image">
+                                                        {% else %}
+                                                        <div class="text-center text-muted">
+                                                            <i class="bi bi-image" style="font-size: 2rem;"></i>
+                                                        </div>
+                                                        {% endif %}
+                                                    </div>
+                                                    <div>
+                                                        <h5 class="fw-bold mb-1">{{ application.pet.name }}</h5>
+                                                        <p class="text-muted small mb-0">
+                                                            {{ application.pet.breed }} • {{ application.pet.age }}y
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <!-- Application Details -->
+                                            <div class="col-md-5">
+                                                <div class="timeline">
+                                                    <div class="timeline-item">
+                                                        <h6 class="fw-semibold mb-1">Application Submitted</h6>
+                                                        <p class="text-muted small mb-0">
+                                                            <i class="bi bi-calendar"></i> {{ application.applied_date|date:"F d, Y" }}
+                                                            at {{ application.applied_date|date:"g:i A" }}
+                                                        </p>
+                                                    </div>
+                                                    
+                                                    {% if application.reviewed_date %}
+                                                    <div class="timeline-item">
+                                                        <h6 class="fw-semibold mb-1">Under Review</h6>
+                                                        <p class="text-muted small mb-0">
+                                                            <i class="bi bi-calendar-check"></i> {{ application.reviewed_date|date:"F d, Y" }}
+                                                        </p>
+                                                    </div>
+                                                    {% endif %}
+                                                    
+                                                    {% if application.decision_date %}
+                                                    <div class="timeline-item">
+                                                        <h6 class="fw-semibold mb-1">Decision Made</h6>
+                                                        <p class="text-muted small mb-0">
+                                                            <i class="bi bi-flag"></i> {{ application.decision_date|date:"F d, Y" }}
+                                                        </p>
+                                                    </div>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                            
+                                            <!-- Status & Actions -->
+                                            <div class="col-md-4">
+                                                <div class="text-end">
+                                                    <!-- Status Badge -->
+                                                    <div class="mb-3">
+                                                        <span class="status-badge status-{{ application.status }}">
+                                                            <i class="bi 
+                                                                {% if application.status == 'pending' %}bi-clock
+                                                                {% elif application.status == 'under_review' %}bi-search
+                                                                {% elif application.status == 'approved' %}bi-check-circle
+                                                                {% elif application.status == 'rejected' %}bi-x-circle
+                                                                {% else %}bi-dash-circle{% endif %}
+                                                            "></i>
+                                                            {{ application.get_status_display }}
+                                                        </span>
+                                                    </div>
+                                                    
+                                                    <!-- Days Since Applied -->
+                                                    <p class="text-muted small mb-3">
+                                                        Applied {{ application.applied_date|timesince }} ago
+                                                    </p>
+                                                    
+                                                    <!-- Action Buttons -->
+                                                    <div class="d-grid gap-2 d-md-block">
+                                                        <a href="{% url 'pet_adoption:pet_detail' application.pet.id %}" 
+                                                           class="btn btn-view">
+                                                            <i class="bi bi-eye"></i> View Pet
+                                                        </a>
+                                                        <button type="button" class="btn btn-outline-secondary" 
+                                                                data-bs-toggle="modal" 
+                                                                data-bs-target="#detailsModal{{ application.id }}">
+                                                            <i class="bi bi-info-circle"></i> Details
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Details Modal -->
+                                    <div class="modal fade" id="detailsModal{{ application.id }}" tabindex="-1">
+                                        <div class="modal-dialog modal-lg">
+                                            <div class="modal-content">
+                                                <div class="modal-header bg-primary text-white">
+                                                    <h5 class="modal-title">
+                                                        <i class="bi bi-file-text"></i> Application Details
+                                                    </h5>
+                                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <div class="row">
+                                                        <div class="col-md-6">
+                                                            <h6 class="fw-semibold text-primary">Pet Information</h6>
+                                                            <ul class="list-unstyled">
+                                                                <li class="mb-2">
+                                                                    <strong>Pet:</strong> {{ application.pet.name }}
+                                                                </li>
+                                                                <li class="mb-2">
+                                                                    <strong>Breed:</strong> {{ application.pet.breed }}
+                                                                </li>
+                                                                <li class="mb-2">
+                                                                    <strong>Age:</strong> {{ application.pet.age }} years
+                                                                </li>
+                                                                <li class="mb-2">
+                                                                    <strong>Type:</strong> 
+                                                                    {% if application.pet.is_dog %}Dog
+                                                                    {% elif application.pet.is_cat %}Cat
+                                                                    {% else %}Other{% endif %}
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <h6 class="fw-semibold text-primary">Application Timeline</h6>
+                                                            <ul class="list-unstyled">
+                                                                <li class="mb-2">
+                                                                    <strong>Applied:</strong> {{ application.applied_date|date:"F d, Y g:i A" }}
+                                                                </li>
+                                                                {% if application.reviewed_date %}
+                                                                <li class="mb-2">
+                                                                    <strong>Review Started:</strong> {{ application.reviewed_date|date:"F d, Y" }}
+                                                                </li>
+                                                                {% endif %}
+                                                                {% if application.decision_date %}
+                                                                <li class="mb-2">
+                                                                    <strong>Decision Made:</strong> {{ application.decision_date|date:"F d, Y" }}
+                                                                </li>
+                                                                {% endif %}
+                                                                {% if application.follow_up_date %}
+                                                                <li class="mb-2">
+                                                                    <strong>Follow-up:</strong> {{ application.follow_up_date|date:"F d, Y" }}
+                                                                </li>
+                                                                {% endif %}
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <div class="mt-4">
+                                                        <h6 class="fw-semibold text-primary">Your Information</h6>
+                                                        <div class="row">
+                                                            <div class="col-md-6">
+                                                                <p><strong>Name:</strong> {{ application.full_name }}</p>
+                                                                <p><strong>Email:</strong> {{ application.email }}</p>
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <p><strong>Phone:</strong> {{ application.phone }}</p>
+                                                                <p><strong>Address:</strong> {{ application.address|truncatewords:10 }}</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    {% if application.reason_for_adoption %}
+                                                    <div class="mt-3">
+                                                        <h6 class="fw-semibold text-primary">Why you want to adopt</h6>
+                                                        <p class="p-3 bg-light rounded">{{ application.reason_for_adoption }}</p>
+                                                    </div>
+                                                    {% endif %}
+                                                    
+                                                    {% if application.admin_comments %}
+                                                    <div class="mt-3">
+                                                        <h6 class="fw-semibold text-warning">Admin Comments</h6>
+                                                        <div class="alert alert-warning">
+                                                            {{ application.admin_comments }}
+                                                        </div>
+                                                    </div>
+                                                    {% endif %}
+                                                    
+                                                    {% if application.follow_up_notes %}
+                                                    <div class="mt-3">
+                                                        <h6 class="fw-semibold text-info">Follow-up Notes</h6>
+                                                        <div class="alert alert-info">
+                                                            {{ application.follow_up_notes }}
+                                                        </div>
+                                                    </div>
+                                                    {% endif %}
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                    <a href="{% url 'pet_adoption:pet_detail' application.pet.id %}" class="btn btn-primary">
+                                                        View Pet Page
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        
+                        <!-- Stats Summary -->
+                        <div class="row mt-5">
+                            <div class="col">
+                                <div class="applications-card p-4">
+                                    <h5 class="fw-semibold mb-3">
+                                        <i class="bi bi-graph-up"></i> Application Statistics
+                                    </h5>
+                                    <div class="row text-center">
+                                        <div class="col-md-2 col-6 mb-3">
+                                            <div class="p-3 bg-light rounded-3">
+                                                <h3 class="fw-bold text-primary">{{ status_counts.all }}</h3>
+                                                <p class="text-muted small mb-0">Total</p>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2 col-6 mb-3">
+                                            <div class="p-3 bg-light rounded-3">
+                                                <h3 class="fw-bold text-warning">{{ status_counts.pending }}</h3>
+                                                <p class="text-muted small mb-0">Pending</p>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2 col-6 mb-3">
+                                            <div class="p-3 bg-light rounded-3">
+                                                <h3 class="fw-bold text-info">{{ status_counts.under_review }}</h3>
+                                                <p class="text-muted small mb-0">Review</p>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2 col-6 mb-3">
+                                            <div class="p-3 bg-light rounded-3">
+                                                <h3 class="fw-bold text-success">{{ status_counts.approved }}</h3>
+                                                <p class="text-muted small mb-0">Approved</p>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2 col-6 mb-3">
+                                            <div class="p-3 bg-light rounded-3">
+                                                <h3 class="fw-bold text-danger">{{ status_counts.rejected }}</h3>
+                                                <p class="text-muted small mb-0">Rejected</p>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2 col-6 mb-3">
+                                            <div class="p-3 bg-light rounded-3">
+                                                <h3 class="fw-bold text-secondary">{{ status_counts.cancelled }}</h3>
+                                                <p class="text-muted small mb-0">Cancelled</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                    {% else %}
+                        <!-- Empty State -->
+                        <div class="empty-state">
+                            <div class="empty-icon">
+                                <i class="bi bi-file-earmark-text"></i>
+                            </div>
+                            <h3 class="fw-bold text-muted mb-3">No Applications Yet</h3>
+                            <p class="text-muted mb-4">
+                                You haven't submitted any adoption applications yet. 
+                                Browse our available pets and find your perfect companion!
+                            </p>
+                            <div class="d-flex justify-content-center gap-3">
+                                <a href="{% url 'pet_adoption:pet_list' %}" class="btn btn-primary btn-lg">
+                                    <i class="bi bi-search"></i> Browse Available Pets
+                                </a>
+                                <a href="{% url 'landing' %}" class="btn btn-outline-secondary btn-lg">
+                                    <i class="bi bi-house"></i> Return Home
+                                </a>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Status filter highlighting
+            const filterBadges = document.querySelectorAll('.filter-badge');
+            filterBadges.forEach(badge => {
+                badge.addEventListener('click', function(e) {
+                    filterBadges.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+            
+            // Auto-open modal if URL has hash
+            if (window.location.hash) {
+                const modalId = window.location.hash;
+                const modal = new bootstrap.Modal(document.querySelector(modalId));
+                modal.show();
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+<!-- In your dropdown menu, replace the logout item with: -->
+<li>
+    <form method="post" action="{% url 'logout' %}" class="d-inline">
+        {% csrf_token %}
+        <button type="submit" class="dropdown-item border-0 bg-transparent text-start w-100 p-0">
+            <i class="bi bi-box-arrow-right"></i> Logout
+        </button>
+    </form>
+</li>
