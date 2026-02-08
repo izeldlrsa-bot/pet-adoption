@@ -16,7 +16,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-gl%zxz=(&nv84=z4+x2su$%8*8hz&p_292e846%7%3#jq3lv4n')
 
 DEBUG = os.environ.get('DEBUG', 'True') == 'True'
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '127.0.0.1,localhost,0.0.0.0,.render.com').split(',')
+
+# ALLOWED_HOSTS configuration
+allowed_hosts_str = os.environ.get('ALLOWED_HOSTS', '127.0.0.1,localhost,0.0.0.0')
+ALLOWED_HOSTS = allowed_hosts_str.split(',')
+
+# Add wildcard for render domains in production
+if not DEBUG:
+    ALLOWED_HOSTS.extend(['*.render.com', '.render.com'])
 
 INSTALLED_APPS = [
     'django.contrib.admin',
