@@ -100,3 +100,20 @@ LOGIN_REDIRECT_URL = 'adoption:pet_list'
 LOGOUT_REDIRECT_URL = 'landing'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Auto-create admin user after migrations
+def create_admin_user():
+    from django.contrib.auth.models import User
+    username = os.environ.get('ADMIN_USERNAME', 'Admin')
+    email = os.environ.get('ADMIN_EMAIL', 'admin@example.com')
+    password = os.environ.get('ADMIN_PASSWORD', 'admin123')
+    
+    if not User.objects.filter(username=username).exists():
+        User.objects.create_superuser(username, email, password)
+
+# Run this when Django starts
+try:
+    if 'RUN_MAIN' in os.environ:  # Only run in main process, not in reloader
+        create_admin_user()
+except Exception:
+    pass
