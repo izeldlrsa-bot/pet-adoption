@@ -25,6 +25,19 @@ ALLOWED_HOSTS = allowed_hosts_str.split(',')
 if not DEBUG:
     ALLOWED_HOSTS.extend(['*.render.com', '.render.com'])
 
+# --- ADD THIS PART ---
+# CSRF configuration
+csrf_trusted_origins_str = os.environ.get('CSRF_TRUSTED_ORIGINS', '')
+if csrf_trusted_origins_str:
+    CSRF_TRUSTED_ORIGINS = csrf_trusted_origins_str.split(',')
+
+# Essential for Render (HTTPS)
+if not DEBUG:
+    CSRF_COOKIE_SECURE = True
+    SESSION_COOKIE_SECURE = True
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+# ----------------------
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
