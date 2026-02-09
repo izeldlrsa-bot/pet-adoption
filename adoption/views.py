@@ -48,7 +48,7 @@ def pet_list(request):
     }
     return render(request, 'adoption/pages/pet_list.html', context)
 
-@admin_required
+#@admin_required
 def pet_create(request):
     """Admin-only view to create new pets"""
     if request.method == 'POST':
