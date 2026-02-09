@@ -1,6 +1,8 @@
 from django.contrib import admin
 from django.urls import path, include
 from adoption.views import LandingView
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -20,3 +22,7 @@ urlpatterns = [
     # ONLY use your custom auth URLs (NOT django.contrib.auth.urls)
     path('accounts/', include('security_management.urls')),
 ]
+
+# Serve media files in development and production
+if settings.DEBUG or True:  # Allow in production on Render too
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
