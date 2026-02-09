@@ -32,14 +32,28 @@ class PetForm(forms.ModelForm):
             'gender': forms.Select(attrs={'class': 'form-control'}),
             'size': forms.Select(attrs={'class': 'form-control'}),
             'vaccination_status': forms.Select(attrs={'class': 'form-control'}),
+            'main_image': forms.FileInput(attrs={
+                'class': 'form-control form-control-lg',
+                'accept': 'image/*',
+                'style': 'cursor: pointer;'
+            }),
+            'additional_images': forms.FileInput(attrs={
+                'class': 'form-control form-control-lg',
+                'accept': 'image/*',
+                'style': 'cursor: pointer;'
+            }),
         }
         labels = {
             'is_dog': 'Is a Dog',
             'is_cat': 'Is a Cat',
+            'main_image': 'Main Pet Photo',
+            'additional_images': 'Additional Photos',
         }
         help_texts = {
             'is_dog': 'Check if this pet is a dog',
             'is_cat': 'Check if this pet is a cat',
+            'main_image': 'Upload a clear, front-facing photo of the pet (JPG, PNG)',
+            'additional_images': 'Upload additional photos showing different angles (JPG, PNG)',
         }
     
     def clean(self):
@@ -54,6 +68,36 @@ class PetForm(forms.ModelForm):
             raise ValidationError("A pet cannot be both a dog and a cat.")
         
         return cleaned_data
+    
+    def clean_main_image(self):
+        main_image = self.cleaned_data.get('main_image')
+        if main_image:
+            # Check file size (max 5MB)
+            if main_image.size > 5 * 1024 * 1024:
+                raise ValidationError("Main image file size must be less than 5MB.")
+            # Validate it's an image
+            try:
+                from PIL import Image
+                img = Image.open(main_image)
+                img.verify()
+            except Exception:
+                raise ValidationError("Please upload a valid image file.")
+        return main_image
+    
+    def clean_additional_images(self):
+        additional_images = self.cleaned_data.get('additional_images')
+        if additional_images:
+            # Check file size (max 5MB)
+            if additional_images.size > 5 * 1024 * 1024:
+                raise ValidationError("Additional image file size must be less than 5MB.")
+            # Validate it's an image
+            try:
+                from PIL import Image
+                img = Image.open(additional_images)
+                img.verify()
+            except Exception:
+                raise ValidationError("Please upload a valid image file.")
+        return additional_images
     
     def clean_age(self):
         age = self.cleaned_data.get('age')
